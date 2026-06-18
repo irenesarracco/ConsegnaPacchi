@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "RitiroPacchi",
+    "slug": "RitiroPacchi",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.RitiroPacchi"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.anonymous.RitiroPacchi",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      ["react-native-maps", { "androidGoogleMapsApiKey": "AIzaSyBiukJ7TuPgLPF2dbz33nc14LLXjho7i_0" }],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends.",
+          "colors": { "cropToolbarColor": "#000000" },
+          "dark": { "colors": { "cropToolbarColor": "#000000" } }
+        }
+      ],
+      ["expo-document-picker", { "iCloudContainerEnvironment": "Production" }],
+      ["react-native-permissions", { "iosPermissions": ["Camera", "PhotoLibrary", "MediaLibrary"] }]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b7190716-069b-422a-ada5-4b8f83359653"
+      }
+    }
+  }
+}

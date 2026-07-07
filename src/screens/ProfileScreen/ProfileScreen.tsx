@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { User } from "../../store/auth/auth.types"
 import { Text , View, ScrollView} from "react-native"
 import styles from "./ProfileScreen.style"
@@ -79,10 +79,10 @@ const ProfileScreen = ()=>{
 
 
 
-    const logOut= async() => {
+    const logOut= useCallback(async() => {
     await AsyncStorage.removeItem('token')
     dispatch(logout())
-  }
+  }, [dispatch])
 
 
 

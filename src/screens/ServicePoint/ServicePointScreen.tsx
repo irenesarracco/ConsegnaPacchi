@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import {View, Text, TouchableOpacity, ScrollView} from 'react-native'
 import { useRoute} from '@react-navigation/native'
 import {useState, useEffect} from 'react'
@@ -45,7 +45,7 @@ const ServicePointScreen = ()=>{
     const navigation= useNavigation()
     
  
-    const getDetail = async(id: number )=> {
+    const getDetail = useCallback(async(id: number )=> {
         try{
             const response = await getServicePointDetail(id)
             setDettaglio(response.data)
@@ -60,13 +60,13 @@ const ServicePointScreen = ()=>{
             }
 
         }
-    }
+    }, [])
 
 
    
 
 
-    const checkPreferito = async (id: number) => {
+    const checkPreferito = useCallback(async (id: number) => {
   try {
     const response = await getFavorites()
     const found = response.data.find((f: any) => f.id === id)
@@ -77,9 +77,9 @@ const ServicePointScreen = ()=>{
   } catch (error) {
     console.error(error)
   }
-}
+}, [])
 
-    const checkPosizione= async()=> {
+    const checkPosizione= useCallback(async()=> {
         try{
             const {status}= await Location.requestForegroundPermissionsAsync()
             if (status !== 'granted') {
@@ -99,7 +99,7 @@ const ServicePointScreen = ()=>{
         }
 
 
-    }
+    }, [dettaglio])
 
 
     const checkQRCode= async(trackingCode: string) => {
@@ -119,16 +119,16 @@ const ServicePointScreen = ()=>{
         }
     }
 
-    const openGoogleMaps= ()=> {
+    const openGoogleMaps= useCallback(()=> {
         const url= 'https://www.google.com/maps/dir/?api=1&destination=' + dettaglio!.lat + ',' + dettaglio!.lon 
         console.log('url:', url)
         Linking.openURL(url)    
-    }   
+    }   , [dettaglio])
 
     useEffect(()=> {
         getDetail(servicePoint.id)
         checkPreferito(servicePoint.id)
-    }, [])
+    }, [getDetail, checkPreferito])
 
     useEffect(() => {
         if(dettaglio) {
@@ -138,7 +138,7 @@ const ServicePointScreen = ()=>{
 
 
 
-    const addPreferito = async () => {
+    const addPreferito = useCallback(async () => {
   try {
     await addFavorites ({
       pickup_point_id: dettaglio!.id
@@ -148,9 +148,9 @@ const ServicePointScreen = ()=>{
   } catch (error: any) {
     dispatch(showError(error.response?.data?.message || 'Errore'))
   }
-}
+}, [dettaglio])
 
-    const removePreferito = async () => {
+    const removePreferito = useCallback(async () => {
     try {
         await deleteFavorites( + dettaglio!.id)
         setIsPreferito(false)
@@ -159,10 +159,10 @@ const ServicePointScreen = ()=>{
     } catch (error: any) {
         dispatch(showError(error.response?.data?.message || 'Errore'))
     }
-    }
+    }, [dettaglio])
 
 
-    const handleScannerOpen = async ()=> {
+    const handleScannerOpen = useCallback(async ()=> {
         const permission = Platform.OS === 'android' ? PERMISSIONS.ANDROID.CAMERA : PERMISSIONS.IOS.CAMERA
 
         const status = await check(permission)
@@ -196,8 +196,18 @@ const ServicePointScreen = ()=>{
     }
     break
         }
-}
+}, [navigation, dispatch])
 
+
+const indirizzo = useMemo(() => {
+     return '📍' + dettaglio?.address + ', ' + dettaglio?.city
+}, [dettaglio?.address, dettaglio?.city])
+
+
+
+const provincia = useMemo(() => {
+  return dettaglio?.province + ' - ' + dettaglio?.postal_code
+}, [dettaglio?.province, dettaglio?.postal_code])
 
     
     if(isLoading) return <Text>Caricamento...</Text>
@@ -215,6 +225,7 @@ const ServicePointScreen = ()=>{
             getDetail(servicePoint.id)
         }} />)
     }
+
 
   
     return (
@@ -244,11 +255,11 @@ const ServicePointScreen = ()=>{
 
                 <InfoCard
                     label="Indirizzo"
-                    value= {'📍' + dettaglio.address +',' + dettaglio.city}
+                    value= {indirizzo}
                 />
                 <InfoCard
                     label="Provincia"
-                    value= {dettaglio.province + ' -' + dettaglio.postal_code}
+                    value= {provincia}
                 />
                 <InfoCard
                     label="Telefono"
@@ -379,11 +390,3 @@ export default ServicePointScreen
 
 
 
-
-
-//l'interazione con libreria dell'utente: file upload (file picker...)
-//gestire differenti permessi/percorsi
-//sotto expo ci sarà libreria
-//caricare etichetta per reso
-//crea sezione resi, con crea nuovo reso che apre schermata per caricare etichetta di reso e appena clicchi si apre file picker
-//fare in modo che l'utente possa scegliere se selezionare dalla galleria o scattare foto direttamente

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import MapView , {Marker, PROVIDER_GOOGLE } from 'react-native-maps'
 import { TouchableOpacity, View , Text, ActivityIndicator} from 'react-native'
 import {useState, useEffect} from 'react'
@@ -56,8 +56,11 @@ if (hasError) {
     />
   )
 }
-//sfrutta interceptor per logout, 404, 500 per errorpage (422, 401 fai passare)
-//sviluppa logiche pr ciu se status.code!=200 e 201 e 422 allora erroPage
+
+
+const markerPress = useCallback((point: ServicePoint) => {
+  navigation.navigate('ServicePoint', { servicePoint: point })
+}, [])
 
   return (
     <View style={[styles.container, {paddingTop, paddingBottom}]}>
@@ -101,7 +104,7 @@ if (hasError) {
           coordinate={{latitude: point.lat, longitude: point.lon}}
           title= {point.name}
           description= {point.courier}
-          onPress={()=> navigation.navigate('ServicePoint', {servicePoint: point})}
+          onPress={()=> markerPress(point)}
           />
         ))}
     </MapView>
@@ -116,3 +119,5 @@ if (hasError) {
 export default MapScreen
 
 
+//customHook, utili per quando ci sono parrecchi useEffect/memo....Invece di scrivere in un unico componente crei tuo hook personalizzato
+//homepage, dettagli reso...

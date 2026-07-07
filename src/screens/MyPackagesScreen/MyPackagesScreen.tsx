@@ -22,6 +22,8 @@ const MyPackagesScreen = () => {
     const [hasError, setHasError] = useState(false)
     const [messageError, setMessageError]= useState('')
 
+
+
     const getMyPackages = async()=> {
         try{
             const response= await getMy()
@@ -60,6 +62,10 @@ const MyPackagesScreen = () => {
 
     return(
        <View style={[styles.container, {paddingTop, paddingBottom}]}>
+
+
+            
+        
                <FlatList 
                contentContainerStyle={styles.scrollContainer}
                data={myPacchi}

@@ -1,4 +1,4 @@
-import { useState , useEffect} from "react"
+import { useState , useEffect, useMemo} from "react"
 import { ReturnLabel } from "./ReturnsScreen.models"
 import { Text , View, ScrollView, Image, TouchableOpacity, ActivityIndicator} from "react-native"
 import AppButton from "../../components/AppButton/AppButton"
@@ -23,7 +23,7 @@ const ReturnsScreen=()=> {
     const dispatch= useDispatch()
     const{ paddingTop, paddingBottom} = useSafeArea()
     const route = useRoute<ReturnsScreenRouteProp>()
-    const {packageId, status, trackingCode, courier, collectedAt } = route.params
+    const {id : packageId, status, trackingCode, courier, collectedAt } = route.params
     const [currentStatus, setCurrentStatus] = useState(status)
     const [labelImage, setLabelImage] = useState<string | null>(null)
     const navigation= useNavigation()
@@ -229,7 +229,7 @@ console.log('status:', status)
       }*/
 
 
-        const takePhoto= async()=> {
+    const takePhoto= async()=> {
      const permission = Platform.OS === 'android' ? PERMISSIONS.ANDROID.CAMERA : PERMISSIONS.IOS.CAMERA
 
      const result = await request(permission)
@@ -268,7 +268,6 @@ console.log('status:', status)
   const handleUploadLabel= async()=> {
     if (!selectedFile) {
       dispatch(showError('Seleziona un file prima di confermare'))
-       setIsLoading(true)
       return
       
     }
@@ -322,6 +321,11 @@ console.log('status:', status)
 }, [])
 
 
+const dataFormattata = useMemo(() => {
+  return new Date(collectedAt).toLocaleDateString('it-IT')
+}, [collectedAt])
+
+
    return (
     <View style={[styles.container, {paddingTop, paddingBottom}]}>
       {currentStatus=== 'collected' ? (
@@ -352,7 +356,48 @@ console.log('status:', status)
           )}
         </TouchableOpacity>
 
-          <View style={styles.containerRow}>
+
+        {/*Prova2 */}
+        <TouchableOpacity 
+          style={styles.uploadArea}
+          onPress={pickImage}
+        >
+          {selectedFile ? (
+            
+            <AppCard>
+              <InfoCard label="File selezionato" value={selectedFile.name} />
+              <InfoCard label="Tipo" value={selectedFile.mimeType} />
+            </AppCard>
+          ) : (
+            <View style={styles.uploadPlaceholder}>
+              <Text style={styles.uploadIcon}>🎞️</Text>
+              <Text style={styles.uploadText}>Tocca per scegliere nella tua galleria</Text>
+              <Text style={styles.uploadSubtext}>JPG o JPEG • max 2 MB</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+
+        {/*Prova3 */}
+        <TouchableOpacity 
+          style={styles.uploadArea}
+          onPress={takePhoto}
+        >
+          {selectedFile ? (
+            
+            <AppCard>
+              <InfoCard label="File selezionato" value={selectedFile.name} />
+              <InfoCard label="Tipo" value={selectedFile.mimeType} />
+            </AppCard>
+          ) : (
+            <View style={styles.uploadPlaceholder}>
+              <Text style={styles.uploadIcon}>📷</Text>
+              <Text style={styles.uploadText}>Tocca per scattare la tua foto</Text>
+              <Text style={styles.uploadSubtext}>JPG o JPEG • max 2 MB</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+
+          {/*<View style={styles.containerRow}>
               <AppButton
                 onPress={pickDocument}
                 title='Scegli file'
@@ -374,7 +419,7 @@ console.log('status:', status)
               flex
               />
 
-          </View>
+          </View>*/}
 
           {selectedFile && (
             <AppCard>
@@ -414,19 +459,11 @@ console.log('status:', status)
           <AppCard>
             <InfoCard label="Tracking_code" value={trackingCode} />
             <InfoCard label="Corriere" value={courier} />
-            <InfoCard label="Data" value={ new Date(collectedAt).toLocaleDateString('it-IT')} />
+            <InfoCard label="Data" value={ dataFormattata} />
           </AppCard>
 
         <View style={styles.divider}/>
         
-
-        {/*<AppButton
-          onPress={handleViewLabel}
-          title='Visualizza etichetta'
-          variant='primary'
-          disabled= {isLoading}
-        />*/}
-
          {labelImage ? (
           
 

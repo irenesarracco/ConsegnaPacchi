@@ -140,19 +140,23 @@ const styles = StyleSheet.create({
   },
   containerButton: {
   position: 'absolute',
-  bottom: '20%',
+  bottom: '0%',
   width: '100%',
   flexDirection: 'row',
   justifyContent: 'space-around',
-  zIndex: 1
+  zIndex: 1,
+  backgroundColor: 'black',
+  height: '15%'
   },
   containerButton2: {
   position: 'absolute',
-  top: '5%',
+  top: '0%',
   width: '100%',
   flexDirection: 'row',
   justifyContent: 'space-around',
-  zIndex: 1
+  zIndex: 1,
+  height: '15%',
+  backgroundColor: 'black'
   },
   quadratoQrCode: {
     position: 'absolute',

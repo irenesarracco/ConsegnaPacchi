@@ -15,7 +15,7 @@ export type Return = {
 
 export type ReturnsScreenParams = {
   Returns: {
-    packageId: number
+    id: number
     status: string
     trackingCode: string
     courier: string 

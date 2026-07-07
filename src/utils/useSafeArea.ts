@@ -8,3 +8,6 @@ export const useSafeArea = () => {
     paddingBottom: insets.bottom,
   }
 }
+
+//non definibile custom hook
+//preferibilmente usarlo nel componente

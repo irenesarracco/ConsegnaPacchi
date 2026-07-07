@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
 
   text: {
     fontWeight: '600',
-    fontSize: 15,
+    fontSize: 15
   },
 
   primaryText: {
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   },
 
   dangerText: {
-    color: '#ef4444',
+    color: '#ef4444'
   },
 })
 

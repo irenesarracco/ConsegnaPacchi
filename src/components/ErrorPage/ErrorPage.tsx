@@ -5,7 +5,8 @@ import styles from "./ErrorPage.style"
 
 const ErrorPage=({
     message,
-    onRiprova
+    onRiprova,
+    titleButton = 'Riprova'
 }: ErrorProps) => {
     return(
         <View style={styles.container}>
@@ -14,7 +15,7 @@ const ErrorPage=({
             {onRiprova && (
                 <AppButton
                 onPress={onRiprova}
-                title='Riprova'
+                title= {titleButton}
                 />
             )}
         </View>
@@ -23,3 +24,7 @@ const ErrorPage=({
 
 
 export default ErrorPage
+
+
+
+//ciclo di vita di React (con relativi Hook principali (useState, useEffect, useReducer, useRef, useCallback, useMemo) e nuovi Hook (useLayoutEffect))

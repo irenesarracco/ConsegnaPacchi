@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { View, Text, TouchableOpacity} from 'react-native'
 import { useDispatch } from 'react-redux'
 import { loginSuccess, loginError, loginStart } from '../../store/auth/authSlice'
@@ -27,7 +27,7 @@ const LoginScreen = () => {
   const navigation = useNavigation<LoginNavigationProp>()
   const {paddingTop, paddingBottom}= useSafeArea()
 
-  const handleLogin = async () => {
+  const handleLogin = useCallback(async () => {
     if (!email || !password) {
       dispatch(showError("Credenziali errate"))
       return
@@ -37,7 +37,7 @@ const LoginScreen = () => {
     setLoading(true)
 
     try {
-      console.log('LOGIN PAYLOAD:', { email, password })
+      
 
       const response = await login (
         email,
@@ -64,7 +64,7 @@ const LoginScreen = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [email, password])
 
   return (
     <View style={[styles.container, {paddingTop, paddingBottom}]}>

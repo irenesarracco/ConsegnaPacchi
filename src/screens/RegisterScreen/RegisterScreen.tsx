@@ -1,5 +1,5 @@
 import { useDispatch} from "react-redux"
-import { useState, useEffect} from "react"
+import { useState, useEffect, useCallback} from "react"
 import { Text ,TouchableOpacity, View, ScrollView} from "react-native"
 import { showSuccess, showError } from "../../store/ui/uiSlice"
 import { useNavigation } from "@react-navigation/native"
@@ -55,8 +55,8 @@ useEffect(() => {
 }, [step])
 
 
-    const postRegister = async()=> {
-        setIsLoading(true)
+    const postRegister = useCallback(async()=> {
+        
         if(!name || !surname || !email || !password || !password_confirmation || !phone || !address) {
             dispatch(showError('Tutti i campi sono obbligatori'))
             return
@@ -70,6 +70,7 @@ useEffect(() => {
             dispatch(showError('Inserisci un indirizzo email valido'))
             return
             }
+        setIsLoading(true)
         try {
             const response = await register({
                 name,
@@ -87,7 +88,7 @@ useEffect(() => {
             dispatch(showError(error.response?.data?.message || "Errore nella registrazione"))
             setIsLoading(false)
         }
-    }
+    }, [name, surname, email, password, password_confirmation, phone, address])
 
 
 

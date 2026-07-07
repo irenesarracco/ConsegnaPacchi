@@ -5,6 +5,7 @@ import { store } from './src/store/store'
 import { RootState } from './src/store/store'
 import {useState, useEffect} from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+import * as Notifications from 'expo-notifications'
 
 import LoginScreen from './src/screens/LoginScreen/LoginScreen'
 import MapScreen from './src/screens/MapScreen/MapScreen'
@@ -15,6 +16,9 @@ import { loginSuccess } from './src/store/auth/authSlice'
 import RegisterScreen from './src/screens/RegisterScreen/RegisterScreen'
 import MyPackagesScreen from './src/screens/MyPackagesScreen/MyPackagesScreen'
 import ErrorPage from './src/components/ErrorPage/ErrorPage'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { RootStackParamList } from './src/screens/MapScreen/MapScreen.models'
+import { useNavigation } from '@react-navigation/native'
 
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
@@ -25,11 +29,18 @@ import * as ScreenOrientation from 'expo-screen-orientation'
 import FavoriteScreen from './src/screens/FavoriteScreen/FavoriteScreen'
 import ReturnsScreen from './src/screens/ReturnsScreen/ReturnsScreen'
 import useNetworkStatus from './src/utils/useNetInfo'
+import { createNavigationContainerRef } from '@react-navigation/native'
+
+
+
+export const navigationRef = createNavigationContainerRef()
 
 
 
 const AuthStack = createNativeStackNavigator()
 const AppStack = createNativeStackNavigator()
+
+
 
 const AuthNavigator = () => (
   <AuthStack.Navigator screenOptions={{ headerShown: false }}>
@@ -47,27 +58,66 @@ const AppNavigator = () => (
     <AppStack.Screen name='MyPackages' component={MyPackagesScreen}/>
     <AppStack.Screen name='Favorites' component={FavoriteScreen}/>
     <AppStack.Screen name='Returns' component={ReturnsScreen}/>
+
   </AppStack.Navigator>
 )
 
 const RootNavigator = () => {
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn)
   const isOffline= useSelector((state: RootState) => state.ui.isOffline)
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const [notificationError, setNotificationError] = useState(false)
 
   useNetworkStatus()
+
+  
+  //per gestire in maniera dinamica la navigazione 
+   useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const data = response.notification.request.content.data
+      const navigationState = navigationRef.getState()
+      const routes= navigationState.routeNames
+      if (!data) return
+      if (!routes.includes(data.screen as any)) {
+        setNotificationError(true)  // ← mostra ErrorPage
+        return
+      }
+        navigation.navigate(data.screen as any, data.params )     
+    })
+    return () => subscription.remove()
+  }, [])
+
 
   if(isOffline) {
     return(
       <ErrorPage
       message= 'Nessuna connesione internet'
-      onRiprova={()=> {}}
+      //onRiprova={()=> {}}
       />
     )
+  }
+
+   if (notificationError) {
+    return <ErrorPage 
+      message='Schermata non trovata' 
+      onRiprova={() => setNotificationError(false)}
+      titleButton='Vai alla Home'
+    />
   }
 
   return isLoggedIn ? <AppNavigator /> : <AuthNavigator />
 }
 
+
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+})
 
 export default function App() {
   const [isAuthenticating, setIsAuthenticating] = useState(true)
@@ -114,6 +164,38 @@ export default function App() {
 
     initAuth()
   }, [])
+
+
+
+
+  async function registraPerNotifiche() {
+  const permesso = await Notifications.requestPermissionsAsync()
+  
+ 
+  if (permesso.status !== 'granted') {
+    console.log('utente ha negato il permesso')
+    return
+  }
+  
+  const token = await Notifications.getExpoPushTokenAsync({
+    projectId: "b7190716-069b-422a-ada5-4b8f83359653"
+  })
+ 
+  console.log('TOKEN:', token.data)
+}
+
+
+useEffect(() => {
+  registraPerNotifiche()
+}, [])
+
+
+
+
+
+
+  
+
  
 
 //PER PERMETTERE DI ADATTARSI
@@ -125,7 +207,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <SafeAreaProvider>
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef}>
           { isAuthenticating? null: (
             <>
 
@@ -138,3 +220,31 @@ export default function App() {
     </Provider>
   )
 }
+
+
+//javascript/typescript
+//capire cosa fa typescript sotto (per imparare ad individuare problemi, capire cosa succede ad app quando viene buildata)
+//typescript aggiunge layer al codice per convertire codice
+//capire:
+//come funziona, come viene gestite a livello di dipendenze,
+//interface, type, multitype, (any, enum, var, let, const)
+//leggi anche come javascript va poi effettivamente ad interpretare
+//packagejson=> capire cosa serve a typescript: dipendenze...
+
+
+//VEDI SEMPRE SU TYPESCRIPT:
+//concetto di classe IMPORTANTE
+//un'applicazione della classe è: singletone pattern
+//modulo
+
+//nel mio progetto:
+//modulo per i favorite, classe non puoi(ma rimane concetto teorico),
+
+
+//roberto ciancia  senior manager
+
+
+//Cose da vedere per progetto
+//observable pattern
+//rxjs (generalmente usata su angular (framework per react programmiing)) applicatosu observable
+//

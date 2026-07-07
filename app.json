@@ -11,6 +11,8 @@
       "bundleIdentifier": "com.anonymous.RitiroPacchi"
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
+ 
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -40,7 +42,15 @@
         }
       ],
       ["expo-document-picker", { "iCloudContainerEnvironment": "Production" }],
-      ["react-native-permissions", { "iosPermissions": ["Camera", "PhotoLibrary", "MediaLibrary"] }]
+      ["react-native-permissions", { "iosPermissions": ["Camera", "PhotoLibrary", "MediaLibrary"] }],
+       [
+        "expo-notifications",
+        {
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false
+        }
+      ]
     ],
     "extra": {
       "eas": {

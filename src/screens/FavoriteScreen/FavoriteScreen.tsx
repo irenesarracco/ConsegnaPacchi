@@ -1,4 +1,4 @@
-import { useState , useEffect} from "react"
+import { useState , useEffect, useCallback} from "react"
 import { Text, View, FlatList} from "react-native"
 import { useDispatch} from "react-redux"
 import { showError} from "../../store/ui/uiSlice"
@@ -20,6 +20,9 @@ const FavoriteScreen = () => {
     const [messageError, setMessageError]= useState('')
 
 
+    
+
+
 
     const getPreferiti = async() => {
         try{
@@ -32,7 +35,7 @@ const FavoriteScreen = () => {
             const status= error.response?.status
             if(status===404 ||status===500){
                 setHasError(true)
-                setMessageError('La risorsa non è attualmente non è disponibile')
+                setMessageError('La risorsa non è attualmente disponibile')
             }
         }
     }
@@ -42,6 +45,17 @@ const FavoriteScreen = () => {
         getPreferiti()
 
     }, [])
+
+
+    const renderItem = useCallback(({ item }: { item: ServicePoint }) => (
+  <AppCard>
+    <Text style={styles.trackingCode}>{item.name}</Text>
+    <Text style={styles.value}>📍 {item.courier}</Text>
+    <Text style={styles.value}>{item.address}, {item.city}, {item.province}</Text>
+    <Text style={styles.value}>Tel: {item.phone}</Text>
+    <Text style={styles.value}>Orari d'apertura: {item.opening_hours}</Text>
+  </AppCard>
+    ), [])
 
 
 
@@ -79,16 +93,7 @@ const FavoriteScreen = () => {
                 </View>
             }
             ItemSeparatorComponent={() => <View style={styles.divider} />}
-            renderItem= {({item}) => (
-                   <AppCard>
-
-                       <Text style={styles.trackingCode}>{item.name}</Text>
-                       <Text style={styles.value}>📍 {item.courier}</Text>
-                       <Text style={styles.value}>{item.address}, {item.city}, {item.province}</Text>
-                       <Text style={styles.value}>Tel:  {item.phone}</Text>
-                       <Text style={styles.value}>Orari d'apertura:  {item.opening_hours}</Text>
-                   </AppCard>
-               )}
+            renderItem= {renderItem}
             
             />
             )}

@@ -6,11 +6,11 @@ import { RootState } from './src/store/store'
 import {useState, useEffect} from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import * as Notifications from 'expo-notifications'
+import './src/i18n/index'
 
 import LoginScreen from './src/screens/LoginScreen/LoginScreen'
 import MapScreen from './src/screens/MapScreen/MapScreen'
 import ServicePointScreen from './src/screens/ServicePoint/ServicePointScreen'
-import PackagesScreen from './src/screens/PackagesScreen/PackagesScreen'
 import client from './src/api/client'
 import { loginSuccess } from './src/store/auth/authSlice'
 import RegisterScreen from './src/screens/RegisterScreen/RegisterScreen'
@@ -54,7 +54,6 @@ const AppNavigator = () => (
     <AppStack.Screen name='Map' component={MapScreen}/>
     <AppStack.Screen name='ServicePoint' component={ServicePointScreen}/>
     <AppStack.Screen name= 'ProfileScreen' component={ProfileScreen}/>
-    <AppStack.Screen name='Lista' component={PackagesScreen}/>
     <AppStack.Screen name='MyPackages' component={MyPackagesScreen}/>
     <AppStack.Screen name='Favorites' component={FavoriteScreen}/>
     <AppStack.Screen name='Returns' component={ReturnsScreen}/>
@@ -71,7 +70,6 @@ const RootNavigator = () => {
   useNetworkStatus()
 
   
-  //per gestire in maniera dinamica la navigazione 
    useEffect(() => {
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {
       const data = response.notification.request.content.data
@@ -105,7 +103,8 @@ const RootNavigator = () => {
     />
   }
 
-  return isLoggedIn ? <AppNavigator /> : <AuthNavigator />
+ // return isLoggedIn ? <AppNavigator /> : <AuthNavigator 
+ return <AppNavigator/>
 }
 
 

@@ -10,7 +10,7 @@ import { register } from "../../services/auth_services"
 import AppInput from "../../components/AppInput/AppInput"
 import AppButton from "../../components/AppButton/AppButton"
 import { useSafeArea } from "../../utils/useSafeArea"
-import React from 'react'
+import { useTranslation } from "react-i18next"
 
 
 type RegisterNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Register'>
@@ -19,6 +19,7 @@ type RegisterNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Reg
 
 
 const RegisterScreen = ()=> {
+    const {t}= useTranslation()
     const dispatch= useDispatch()
     const[name, setName] = useState<string>('')
     const[surname, setSurname]= useState<string>('')
@@ -55,7 +56,7 @@ useEffect(() => {
 }, [step])
 
 
-    const postRegister = useCallback(async()=> {
+    const postRegister = useCallback(()=> {
         
         if(!name || !surname || !email || !password || !password_confirmation || !phone || !address) {
             dispatch(showError('Tutti i campi sono obbligatori'))
@@ -71,8 +72,9 @@ useEffect(() => {
             return
             }
         setIsLoading(true)
-        try {
-            const response = await register({
+
+
+        register({
                 name,
                 surname,
                 email,
@@ -80,14 +82,18 @@ useEffect(() => {
                 password_confirmation,
                 phone,
                 address
-            })
-            dispatch(showSuccess(response.data.message || "Registrazione effettuata con successo"))
-            navigation.navigate('Login')
-            setIsLoading(false)
-        }catch(error: any) {
-            dispatch(showError(error.response?.data?.message || "Errore nella registrazione"))
-            setIsLoading(false)
-        }
+            }).subscribe({
+                next: (response) => {
+                  dispatch(showSuccess(response.message || "Registrazione effettuata con successo"))
+                    navigation.navigate('Login')
+                    setIsLoading(false)  
+                    },
+                error:(err) => {
+                    dispatch(showError(err.response?.data?.message || "Errore nella registrazione"))
+                    setIsLoading(false)
+                }
+            
+        })
     }, [name, surname, email, password, password_confirmation, phone, address])
 
 
@@ -108,54 +114,54 @@ useEffect(() => {
 
                
                 <Text style={styles.subtitle}> 
-                    {step===1? 'Dati personali' : 'Credenziali di accesso'}
+                    {step===1? t('register.personalData') : t('register.credentials')}
                 </Text>
 
                 {step===1 ? (
                     <View>
                     <AppInput
-                    placeholder="Nome"
+                    placeholder={t('register.name')}
                     value={name}
                     onChangeText={setName}
                 />
 
                 <AppInput
-                    placeholder="Cognome"
+                    placeholder={t('register.surname')}
                     value={surname}
                     onChangeText={setSurname}
                 />
                 <AppInput
-                    placeholder="Telefono"
+                    placeholder={t('register.phone')}
                     value={phone}
                     onChangeText={setPhone}
                 />
 
 
                 <AppInput
-                    placeholder="Indirizzo"
+                    placeholder={t('register.address')}
                     value={address}
                     onChangeText={setAddress}
                 />
 
-                <AppButton title="Avanti →" variant="primary" onPress={goToStep2} />
+                <AppButton title={t('register.next')} variant="primary" onPress={goToStep2} />
                 </View>):(
 
                 <View>
                 <AppInput
-                    placeholder="Email"
+                    placeholder={t('register.email')}
                     value={email}
                     onChangeText={setEmail}
                 />
                 
                 <AppInput
-                    placeholder="Password"
+                    placeholder={t('register.password')}
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry
                 />
 
                 <AppInput
-                    placeholder="Conferma Password"
+                    placeholder={t('register.confirmPassword')}
                     value={password_confirmation}
                     onChangeText={setPassword_confirmation}
                     secureTextEntry
@@ -163,7 +169,7 @@ useEffect(() => {
 
 
                 <AppButton 
-                    title="Registrati" 
+                    title={t('register.button')}
                     variant="success" 
                     onPress={postRegister} 
                 />
@@ -172,7 +178,7 @@ useEffect(() => {
 
 
                 <AppButton 
-                    title="← Indietro" 
+                    title={t('register.back')}
                     variant="secondary" 
                     onPress={() => setStep(1)} 
                 />

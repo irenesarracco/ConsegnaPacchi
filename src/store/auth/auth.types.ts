@@ -9,6 +9,9 @@ export type User = {
   updated_at: string
 }
 
+export type UserProfile = Omit<User, 'created_at' | 'updated_at'>
+export type UserUpdateData = Pick<User, 'name' | 'surname' | 'email' | 'phone' | 'address'>
+
 export type AuthState = {
   user: User | null
   token: string | null

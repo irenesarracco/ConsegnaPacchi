@@ -24,21 +24,21 @@ const FavoriteScreen = () => {
 
 
 
-    const getPreferiti = async() => {
-        try{
-            const response = await getFavorites()
-            setIsLoading(false)
-            setPreferiti(response.data)
-        } catch(error: any){
-            dispatch(showError(error.response?.data?.message || 'Errore nel caricamento'))
-            setIsLoading(false)
-            const status= error.response?.status
-            if(status===404 ||status===500){
-                setHasError(true)
-                setMessageError('La risorsa non è attualmente disponibile')
-            }
+    const getPreferiti = () => {
+            getFavorites().subscribe({
+             next:(response)=> {setIsLoading(false)
+                setPreferiti(response.data)
+        },
+            error: (err)=> {
+                dispatch(showError(err.response?.data?.message || 'Errore nel caricamento'))
+                setIsLoading(false)
+                const status= err.response?.status
+                if(status===404 ||status===500){
+                    setHasError(true)
+                    setMessageError('La risorsa non è attualmente disponibile')
+            }}})
         }
-    }
+    
      
 
     useEffect(()=> {

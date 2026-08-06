@@ -16,9 +16,11 @@ import { getReturnLabel, uploadReturnLabel } from "../../services/packages_servi
 import { useNavigation } from "@react-navigation/native"
 import { check, request, openSettings, PERMISSIONS, RESULTS } from 'react-native-permissions'
 import { Platform } from 'react-native'
+import { useTranslation } from "react-i18next";
 
 
 const ReturnsScreen=()=> {
+  const {t} = useTranslation()
     const [selectedFile, setSelectedFile]= useState<ReturnLabel | null>(null)
     const dispatch= useDispatch()
     const{ paddingTop, paddingBottom} = useSafeArea()
@@ -265,7 +267,7 @@ console.log('status:', status)
   
 
 
-  const handleUploadLabel= async()=> {
+  const handleUploadLabel=()=> {
     if (!selectedFile) {
       dispatch(showError('Seleziona un file prima di confermare'))
       return
@@ -275,14 +277,16 @@ console.log('status:', status)
     if (selectedFile.size && selectedFile.size > maxSize) {
       dispatch(showError('Il file è troppo grande, ridurre a max 2MB'))
     }*/}
-    try{
-      const response = await uploadReturnLabel(packageId, selectedFile.uri)
+    
+     uploadReturnLabel(packageId, selectedFile.uri).subscribe({
+      next:(response)=>{
       dispatch(showSuccess(response.message))
       setSelectedFile(null)
       setCurrentStatus('return_initiated')
       setIsLoading(false)
         
-    } catch(error: any) {
+    } ,
+    error:(error: any)=> {
         const errors = error.response?.data?.errors
         if (errors?.label) {
           const errorCode= errors.label[0]
@@ -297,21 +301,21 @@ console.log('status:', status)
           dispatch(showError(error.response?.data?.message || 'Errore nel caricamento'))
           setIsLoading(false)
         }
-      }
+      }})
   }
 
 
 
-  const handleViewLabel= async()=> {
+  const handleViewLabel= ()=> {
     setIsLoading(true)
-    try{
-      const response= await getReturnLabel(packageId)
+   getReturnLabel(packageId).subscribe({
+    next:(response)=>{
       setLabelImage(response)
       setIsLoading(false)
-    } catch(error: any){
+    }, error:(error: any)=>{
       dispatch(showError('Errore nel caricamento etichetta'))
       setIsLoading(false)
-    }
+    }})
   }
 
   useEffect(() => {
@@ -332,8 +336,8 @@ const dataFormattata = useMemo(() => {
 
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.header}>
-            <Text style={styles.titolo}>Nuovo reso</Text>
-            <Text style={styles.sottotitolo}>Carica l'etichetta</Text>
+            <Text style={styles.titolo}>{t('returns.newReturn')}</Text>
+            <Text style={styles.sottotitolo}>{t('returns.uploadLabel')}</Text>
           </View>
 
 
@@ -344,14 +348,14 @@ const dataFormattata = useMemo(() => {
           {selectedFile ? (
             
             <AppCard>
-              <InfoCard label="File selezionato" value={selectedFile.name} />
-              <InfoCard label="Tipo" value={selectedFile.mimeType} />
+              <InfoCard label={t('returns.selectedFile')} value={selectedFile.name} />
+              <InfoCard label={t('returns.type')} value={selectedFile.mimeType} />
             </AppCard>
           ) : (
             <View style={styles.uploadPlaceholder}>
               <Text style={styles.uploadIcon}>📁</Text>
-              <Text style={styles.uploadText}>Tocca per scegliere un file</Text>
-              <Text style={styles.uploadSubtext}>JPG o JPEG • max 2 MB</Text>
+              <Text style={styles.uploadText}>{t('returns.chooseFile')}</Text>
+              <Text style={styles.uploadSubtext}>{t('returns.fileFormat')}</Text>
             </View>
           )}
         </TouchableOpacity>
@@ -365,14 +369,14 @@ const dataFormattata = useMemo(() => {
           {selectedFile ? (
             
             <AppCard>
-              <InfoCard label="File selezionato" value={selectedFile.name} />
-              <InfoCard label="Tipo" value={selectedFile.mimeType} />
+              <InfoCard label={t('returns.selectedFile')} value={selectedFile.name} />
+              <InfoCard label={t('returns.type')}  value={selectedFile.mimeType} />
             </AppCard>
           ) : (
             <View style={styles.uploadPlaceholder}>
               <Text style={styles.uploadIcon}>🎞️</Text>
-              <Text style={styles.uploadText}>Tocca per scegliere nella tua galleria</Text>
-              <Text style={styles.uploadSubtext}>JPG o JPEG • max 2 MB</Text>
+              <Text style={styles.uploadText}>{t('returns.chooseGallery')}</Text>
+              <Text style={styles.uploadSubtext}>{t('returns.fileFormat')}</Text>
             </View>
           )}
         </TouchableOpacity>
@@ -385,14 +389,14 @@ const dataFormattata = useMemo(() => {
           {selectedFile ? (
             
             <AppCard>
-              <InfoCard label="File selezionato" value={selectedFile.name} />
-              <InfoCard label="Tipo" value={selectedFile.mimeType} />
+              <InfoCard label={t('returns.selectedFile')} value={selectedFile.name} />
+              <InfoCard label={t('returns.type')}  value={selectedFile.mimeType} />
             </AppCard>
           ) : (
             <View style={styles.uploadPlaceholder}>
               <Text style={styles.uploadIcon}>📷</Text>
-              <Text style={styles.uploadText}>Tocca per scattare la tua foto</Text>
-              <Text style={styles.uploadSubtext}>JPG o JPEG • max 2 MB</Text>
+              <Text style={styles.uploadText}>{t('returns.takePhoto')}</Text>
+              <Text style={styles.uploadSubtext}>{t('returns.fileFormat')}</Text>
             </View>
           )}
         </TouchableOpacity>
@@ -423,8 +427,8 @@ const dataFormattata = useMemo(() => {
 
           {selectedFile && (
             <AppCard>
-              <InfoCard label="File selezionato" value={selectedFile.name} />
-              <InfoCard label="Tipo" value={selectedFile.mimeType} />
+              <InfoCard label={t('returns.selectedFile')} value={selectedFile.name} />
+              <InfoCard label={t('returns.type')}  value={selectedFile.mimeType} />
             </AppCard>
           )}
 
@@ -435,14 +439,14 @@ const dataFormattata = useMemo(() => {
           {selectedFile && (
             <AppButton
             onPress={handleUploadLabel}
-            title= 'Salva'
+            title={t('returns.save')} 
             variant='success'
             disabled={isLoading}
           />)}
 
           <AppButton
             onPress={()=> navigation.goBack()}
-            title= 'Annulla'
+            title= {t('returns.cancel')}
             variant='danger'
           />
 
@@ -451,15 +455,15 @@ const dataFormattata = useMemo(() => {
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           
           <View style={styles.header}>
-            <Text style={styles.titolo}>Reso avviato</Text>
-            <Text style= {styles.sottotitolo}> La tua etichetta è stata caricata</Text>
+            <Text style={styles.titolo}>{t('returns.returnStarted')}</Text>
+            <Text style= {styles.sottotitolo}> {t('returns.labelUploaded')}</Text>
 
           </View>
 
           <AppCard>
-            <InfoCard label="Tracking_code" value={trackingCode} />
-            <InfoCard label="Corriere" value={courier} />
-            <InfoCard label="Data" value={ dataFormattata} />
+            <InfoCard label={t('returns.trackingCode')} value={trackingCode} />
+            <InfoCard label={t('returns.courier')} value={courier} />
+            <InfoCard label={t('returns.date')} value={dataFormattata} />
           </AppCard>
 
         <View style={styles.divider}/>
@@ -468,7 +472,7 @@ const dataFormattata = useMemo(() => {
           
 
               <AppCard>
-                <Text style={styles.labelTitle}>🏷️ Etichetta di reso</Text>
+                <Text style={styles.labelTitle}>{t('returns.returnLabel')}</Text>
               <Image 
                 source={{ uri: labelImage }} 
                 style={styles.image} 
@@ -481,7 +485,7 @@ const dataFormattata = useMemo(() => {
             ) : (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#111827" />
-                <Text style={styles.sottotitolo}>Caricamento etichetta...</Text>
+                <Text style={styles.sottotitolo}>{t('returns.loadingLabel')}</Text>
               </View>
             
             )}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react"
-import { User } from "../../store/auth/auth.types"
+import { User, UserProfile, UserUpdateData } from "../../store/auth/auth.types"
 import { Text , View, ScrollView} from "react-native"
 import styles from "./ProfileScreen.style"
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -14,64 +14,76 @@ import AppButton from "../../components/AppButton/AppButton"
 import InfoCard from "../../components/InfoCard/InfoCard"
 import { useSafeArea } from "../../utils/useSafeArea"
 import ErrorPage from '../../components/ErrorPage/ErrorPage'
+import { useTranslation } from "react-i18next"
+import i18n from "../../i18n/index"
 
 const ProfileScreen = ()=>{
-    const [profile, setProfile]= useState<User | null> (null)
+    const { t} = useTranslation()
+    //const [profile, setProfile]= useState<UserProfile | null> (null)
     const [isLoading, setIsLoading]= useState(true)
     const dispatch= useDispatch()
     const [isEditing, setIsEditing]= useState(false)
-    const [nome, setNome] = useState('')
-    const [cognome, setCognome]=useState('')
-    const [telefono, setTelefono] = useState('')
-    const [email, setEmail] = useState('')
-    const [indirizzo, setIndirizzo] = useState('')
+    const [formData, setFormData] = useState<Partial<UserUpdateData>>({})
     const navigation= useNavigation<ProfileScreenNavigationProp>()
     const {paddingTop, paddingBottom}= useSafeArea()
     const [hasError, setHasError] = useState(false)
     const [messageError, setMessageError]= useState('')
 
 
-    const get = async() => {
-       try {
-         const response = await getProfile()
+    const [profile, setProfile] = useState<UserProfile | null>({
+  id: 1,
+  name: 'Federica',
+  surname: 'Test',
+  email: 'test@test.com',
+  phone: '333333333',
+  address: 'Via Test 1'
+})
+
+    const cambiaLingua = () => {
+        const nuovaLingua = i18n.language === 'it' ? 'en' : 'it'
+        i18n.changeLanguage(nuovaLingua)
+    }
+
+    const get = () => {
+         getProfile().subscribe({
+            next:(response)=> {
+                setIsLoading(false)
+                setProfile(response)
+                setFormData({
+                    name: response.name,
+                    surname: response.surname,
+                    phone: response.phone,
+                    address: response.address,
+                    email: response.email
+                })
+            },
+            error: (err)=> {
+            console.error(err)
             setIsLoading(false)
-            setProfile(response.data)
-            setNome(response.data.name)
-            setCognome(response.data.surname)
-            setTelefono(response.data.phone)
-            setIndirizzo(response.data.address)
-            setEmail(response.data.email)
-        }catch(error: any){
-            console.error(error)
-            setIsLoading(false)
-            const status= error.response?.status
+            const status= err.response?.status
             if (status===404 ||status===500){
                 setHasError(true)
                 setMessageError('Servizio momentaneamente non disponibile')
             }
-        }
+        }})
     }
 
 
 
 
 
-    const updataProfile= async()=>{
-        try{
-            const response= await updateProfile({
-                name: nome,
-                surname: cognome,
-                phone: telefono,
-                address: indirizzo,
-                email: email
-            })
-            setProfile(response.data)
+            const updataProfile = ()=> {
+                updateProfile(formData).subscribe({
+                next:(response)=> {setProfile(response.data)
             setIsEditing(false)
-            dispatch(showSuccess(response.message))
-        } catch(error: any) {
-            dispatch(showError(error.message || 'Errore, profilo non aggiornato'))
+            dispatch(showSuccess(response.message))},
+               error: (err)=> {
+            dispatch(showError(err.message || 'Errore, profilo non aggiornato'))
 
-    }}
+    }})
+
+            }
+            
 
     useEffect(()=> {
         get()
@@ -86,8 +98,7 @@ const ProfileScreen = ()=>{
 
 
 
-    if(isLoading ) return <Text>Caricamento dati...</Text>
-    
+if (isLoading) return <Text>{t('common.loading')}</Text>
 
    
 
@@ -117,9 +128,15 @@ const ProfileScreen = ()=>{
                     
                     <AppButton
                         onPress={logOut}
-                        title= '🚪 Logout'
+                        title= {t('profile.logout')}
                         variant= 'danger'
                    />
+
+                   <AppButton
+                        onPress={cambiaLingua}
+                        title={i18n.language === 'it' ? '🇬🇧 English' : '🇮🇹 Italiano'}
+                        variant="secondary"
+                    />
                 </View>
 
                 <View style={styles.divider}/>
@@ -129,46 +146,46 @@ const ProfileScreen = ()=>{
                 {isEditing ? (
                     <View>
                         <AppInput
-                            placeholder="Nome"
-                            value={nome}
-                            onChangeText={setNome}
+                            placeholder={t('profile.name')}
+                            value={formData.name || ''}
+                            onChangeText={(text) => setFormData({...formData, name: text})}
                         />
 
                         <AppInput
-                            placeholder="Cognome"
-                            value={cognome}
-                            onChangeText={setCognome}
+                            placeholder={t('profile.surname')}
+                            value={formData.surname || ''}
+                            onChangeText={(text)=> setFormData({...formData, surname: text})}
                         />
 
                         <AppInput
-                            placeholder="Email"
-                            value={email}
-                            onChangeText={setEmail}
+                            placeholder={t('profile.email')}
+                            value={formData.email || ''}
+                            onChangeText={(text) => setFormData({...formData, email: text})}
                         />
 
                         <AppInput
-                            placeholder="Telefono"
-                            value={telefono}
-                            onChangeText={setTelefono}
+                            placeholder={t('profile.phone')}
+                            value={formData.phone || ''}
+                            onChangeText={(text)=> setFormData({...formData, phone: text})}
                         />
 
                         <AppInput
-                            placeholder="Indirizzo"
-                            value={indirizzo}
-                            onChangeText={setIndirizzo}
+                            placeholder={t('profile.address')}
+                            value={formData.address || ''}
+                            onChangeText={(text) => setFormData({...formData, address: text})}
                         />
 
 
                         <AppButton
                             onPress={updataProfile}
-                            title='Salva'
+                            title={t('profile.save')}
                             variant="success"
                          />
 
 
                         <AppButton
                             onPress={()=> setIsEditing(false)}
-                            title= 'Annulla'
+                            title= {t('profile.cancel')}
                             variant="secondary"
                         />
 
@@ -177,17 +194,17 @@ const ProfileScreen = ()=>{
                 ) : (
                     <View>
                         <InfoCard
-                        label="Indirizzo email"
+                        label={t('profile.email')}
                         value={profile.email}/>
 
 
                         <InfoCard
-                        label="Telefono"
+                        label={t('profile.phone')}
                         value= {profile.phone}
                         />
 
                          <InfoCard
-                        label="Indirizzo"
+                        label={t('profile.address')}
                         value= {profile.address}
                          />
                         
@@ -195,21 +212,21 @@ const ProfileScreen = ()=>{
 
                  <AppButton 
                     onPress={()=> navigation.navigate('MyPackages')}
-                    title='Lista pacchi ritirati'
+                    title={t('profile.packages')}
                     variant="primary"
                />
 
 
                 <AppButton
                     onPress={()=> navigation.navigate('Favorites')}
-                    title='Service Point Preferiti'
+                    title={t('profile.favorites')}
                     variant="secondary"
                 />
 
 
                 <AppButton
                     onPress={()=> setIsEditing(true)}
-                    title='Modifica Profilo'
+                    title={t('profile.edit')}
                     variant="primary"
 
                 />

@@ -1,0 +1,91 @@
+{
+  "login": {
+  "title": "Login",
+  "subtitle": "Benvenuto, inserisci le tue credenziali per accedere all'app!",
+  "email": "Email",
+  "password": "Password",
+  "button": "Accedi",
+  "loading": "Caricamento...",
+  "error": "Credenziali errate",
+  "register": "Non sei ancora registrato?"
+},
+ "register": {
+  "personalData": "Dati personali",
+  "credentials": "Credenziali di accesso",
+  "name": "Nome",
+  "surname": "Cognome",
+  "phone": "Telefono",
+  "address": "Indirizzo",
+  "email": "Email",
+  "password": "Password",
+  "confirmPassword": "Conferma Password",
+  "next": "Avanti →",
+  "back": "← Indietro",
+  "button": "Registrati"
+},
+  "profile": {
+  "logout": "🚪 Logout",
+  "edit": "Modifica Profilo",
+  "save": "Salva",
+  "cancel": "Annulla",
+  "email": "Indirizzo email",
+  "phone": "Telefono",
+  "address": "Indirizzo",
+  "packages": "Lista pacchi ritirati",
+  "favorites": "Service Point Preferiti",
+  "name": "Nome",
+  "surname": "Cognome"
+},
+  "common": {
+  "loading": "Caricamento...",
+  "error": "Errore",
+  "noData": "Nessun dato",
+  "retry": "Riprova"
+},
+"map": {
+  "title": "Mappa Service Point",
+  "loading": "Caricamento punti...",
+  "available": "punti disponibili"
+},
+"packages": {
+  "title": "📦 I miei pacchi",
+  "collected": "Ritirato",
+  "returnInitiated": "Procedura di reso attivata",
+  "return": "Reso",
+  "viewReturn": "Visualizza dettagli reso",
+  "withdrawn": "pacchi ritirati"
+},
+"servicePoint": {
+  "address": "Indirizzo",
+  "province": "Provincia",
+  "phone": "Telefono",
+  "hours": "Orari",
+  "openMaps": "Apri in Google Maps",
+  "nearby": "Sei vicino! Puoi ritirare il pacco",
+  "farAway": "Sei troppo lontano dal service point",
+  "scanQR": "📷 Scansiona QR Code",
+  "manualCode": "Inserisci tracking code manualmente",
+  "sendCode": "Invia codice",
+  "closeCamera": "❌ Chiudi Camera",
+  "scanAgain": "📷 Scansiona di nuovo"
+},
+"returns": {
+  "newReturn": "Nuovo reso",
+  "uploadLabel": "Carica l'etichetta",
+  "selectedFile": "File selezionato",
+  "type": "Tipo",
+  "chooseFile": "Tocca per scegliere un file",
+  "chooseGallery": "Tocca per scegliere nella tua galleria",
+  "takePhoto": "Tocca per scattare la tua foto",
+  "fileFormat": "JPG o JPEG • max 2 MB",
+  "save": "Salva",
+  "cancel": "Annulla",
+  "returnStarted": "Reso avviato",
+  "labelUploaded": "La tua etichetta è stata caricata",
+  "trackingCode": "Tracking_code",
+  "courier": "Corriere",
+  "date": "Data",
+  "returnLabel": "🏷️ Etichetta di reso",
+  "loadingLabel": "Caricamento etichetta..."
+}
+}

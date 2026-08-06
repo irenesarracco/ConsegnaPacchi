@@ -1,0 +1,91 @@
+{
+  "login": {
+  "title": "Login",
+  "subtitle": "Welcome, insert your credentials to access the app!",
+  "email": "Email",
+  "password": "Password",
+  "button": "Login",
+  "loading": "Loading...",
+  "error": "Wrong credentials",
+  "register": "Not registered yet?"
+},
+  "register": {
+  "personalData": "Personal data",
+  "credentials": "Access credentials",
+  "name": "Name",
+  "surname": "Surname",
+  "phone": "Phone",
+  "address": "Address",
+  "email": "Email",
+  "password": "Password",
+  "confirmPassword": "Confirm Password",
+  "next": "Next →",
+  "back": "← Back",
+  "button": "Register"
+},
+  "profile": {
+  "logout": "🚪 Logout",
+  "edit": "Edit Profile",
+  "save": "Save",
+  "cancel": "Cancel",
+  "email": "Email address",
+  "phone": "Phone",
+  "address": "Address",
+  "packages": "Collected packages list",
+  "favorites": "Favorite Service Points",
+  "name": "Name",
+  "surname": "Surname"
+},
+  "common": {
+  "loading": "Loading...",
+  "error": "Error",
+  "noData": "No data",
+  "retry": "Retry"
+},
+  "map": {
+  "title": "Service Point Map",
+  "loading": "Loading points...",
+  "available": "points available"
+},
+"packages": {
+  "title": "📦 My packages",
+  "collected": "Collected",
+  "returnInitiated": "Return procedure activated",
+  "return": "Return",
+  "viewReturn": "View return details",
+  "withdrawn": "collected packages"
+},
+"servicePoint": {
+  "address": "Address",
+  "province": "Province",
+  "phone": "Phone",
+  "hours": "Hours",
+  "openMaps": "Open in Google Maps",
+  "nearby": "You are nearby! You can collect the package",
+  "farAway": "You are too far from the service point",
+  "scanQR": "📷 Scan QR Code",
+  "manualCode": "Insert tracking code manually",
+  "sendCode": "Send code",
+  "closeCamera": "❌ Close Camera",
+  "scanAgain": "📷 Scan again"
+},
+"returns": {
+  "newReturn": "New return",
+  "uploadLabel": "Upload the label",
+  "selectedFile": "Selected file",
+  "type": "Type",
+  "chooseFile": "Tap to choose a file",
+  "chooseGallery": "Tap to choose from your gallery",
+  "takePhoto": "Tap to take a photo",
+  "fileFormat": "JPG or JPEG • max 2 MB",
+  "save": "Save",
+  "cancel": "Cancel",
+  "returnStarted": "Return started",
+  "labelUploaded": "Your label has been uploaded",
+  "trackingCode": "Tracking code",
+  "courier": "Courier",
+  "date": "Date",
+  "returnLabel": "🏷️ Return label",
+  "loadingLabel": "Loading label..."
+}
+}

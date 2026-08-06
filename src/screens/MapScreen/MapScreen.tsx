@@ -10,8 +10,11 @@ import { MapScreenNavigationProp } from './MapScreen.models'
 import { getListaServicePoints } from '../../services/servicePoint_services'
 import { useSafeArea } from '../../utils/useSafeArea'
 import ErrorPage from '../../components/ErrorPage/ErrorPage'
+import { useTranslation } from 'react-i18next'
+
 
 const MapScreen= () => {
+  const {t} = useTranslation()
   const [servicePoint, setServicePoint] = useState<ServicePoint[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const navigation = useNavigation<MapScreenNavigationProp>()
@@ -22,19 +25,20 @@ const MapScreen= () => {
 
 
 
-  const getServicePoints = async () => {
-  try{
-  const response =await getListaServicePoints()
-  setServicePoint(response.data)
+  const getServicePoints = () => {
+  getListaServicePoints().subscribe({
+  next:(response)=>{
+    setServicePoint(response.data)
+    setIsLoading(false)
+},
+  error: (err)=> {
+  console.log(err)
   setIsLoading(false)
-} catch(error: any) {
-  console.log(error)
-  setIsLoading(false)
-  const status= error.response?.status
+  const status= err.response?.status
   if (status===404 || status===500)
   {setHasError(true)
   setMessageError('Servizio momentaneamente non disponibile')}
-}
+}})
 }
 
 
@@ -75,9 +79,9 @@ const markerPress = useCallback((point: ServicePoint) => {
         </TouchableOpacity>
 
         <View style={styles.textContainer}>
-          <Text style={styles.panelTitle}>Mappa Service Point</Text>
+          <Text style={styles.panelTitle}>{t('map.title')}</Text>
           <Text style={styles.panelSubtitle}>
-            {isLoading ? 'Caricamento punti...' : servicePoint.length + 'punti disponibili'}
+            {isLoading ?t('map.loading') : servicePoint.length + ' ' + t('map.available')}
           </Text>
         </View>
 

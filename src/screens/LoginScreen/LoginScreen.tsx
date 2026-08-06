@@ -12,6 +12,8 @@ import { login } from '../../services/auth_services'
 import AppInput from '../../components/AppInput/AppInput'
 import AppButton from '../../components/AppButton/AppButton'
 import { useSafeArea } from '../../utils/useSafeArea'
+import { useTranslation } from 'react-i18next'
+
 
 type LoginNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>
 
@@ -19,6 +21,7 @@ type LoginNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Login'
 
 
 const LoginScreen = () => {
+  const {t} = useTranslation()
   const dispatch = useDispatch()
 
   const [email, setEmail] = useState<string >('')
@@ -27,7 +30,7 @@ const LoginScreen = () => {
   const navigation = useNavigation<LoginNavigationProp>()
   const {paddingTop, paddingBottom}= useSafeArea()
 
-  const handleLogin = useCallback(async () => {
+  const handleLogin = useCallback( () => {
     if (!email || !password) {
       dispatch(showError("Credenziali errate"))
       return
@@ -36,66 +39,46 @@ const LoginScreen = () => {
     dispatch(loginStart())
     setLoading(true)
 
-    try {
-      
-
-      const response = await login (
-        email,
-        password,
-      )
-
-
-      
-
-      const { user, token} = response
-
-      dispatch(loginSuccess({ user, token }))
-
-      await AsyncStorage.setItem('token', token)
-
-    } catch (error: any) {
-      
-
-      dispatch(
-        loginError(error.response?.data?.message || 'Errore login')
-      )
-
-      dispatch(showError('Login fallito'))
-    } finally {
-      setLoading(false)
-    }
-  }, [email, password])
+    login(email, password).subscribe({
+      next: (response)=> {
+        const { user, token } = response
+        dispatch(loginSuccess(response))
+        AsyncStorage.setItem('token', token)
+      },
+      error:(err)=> {
+        dispatch(loginError(err.response?.data?.message || 'Errore login'))
+        dispatch(showError(t('login.error'))) 
+        setLoading(false)
+      }
+    })
+  },
+       [email, password])
 
   return (
     <View style={[styles.container, {paddingTop, paddingBottom}]}>
 
-      <Text style={styles.header}>
-        Login
-      </Text>
-      <Text style={styles.subtitle}> Benvenuto, inserisci le tue credenziali per accedere all'app!</Text>
-       
+      <Text style={styles.header}>{t('login.title')}</Text>
+      <Text style={styles.subtitle}>{t('login.subtitle')}</Text>
+
       <AppInput
-        placeholder="Email"
+        placeholder={t('login.email')}
         value={email}
         onChangeText={setEmail}
       />
-      
       <AppInput
-        placeholder="Password"
+        placeholder={t('login.password')}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
 
-     <AppButton
-        title={loading ? 'Loading...' : 'Accedi'}
+      <AppButton
+        title={loading ? t('login.loading') : t('login.button')}
         onPress={handleLogin}
       />
 
-
-
       <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-        <Text>Non sei ancora registrato?</Text>
+        <Text>{t('login.register')}</Text>
       </TouchableOpacity>
 
     </View>

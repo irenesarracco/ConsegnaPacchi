@@ -22,9 +22,11 @@ import ErrorPage from '../../components/ErrorPage/ErrorPage'
 import { useNavigation } from '@react-navigation/native'
 import { check, request, openSettings, PERMISSIONS, RESULTS } from 'react-native-permissions'
 import { Platform } from 'react-native'
+import { useTranslation } from 'react-i18next'
 
 
 const ServicePointScreen = ()=>{
+    const {t} = useTranslation()
     const route= useRoute<ServicePointRouteProp>()
     const {servicePoint} = route.params
     const [dettaglio, setDettaglio] = useState<ServicePointDetail | null> (null)
@@ -45,38 +47,40 @@ const ServicePointScreen = ()=>{
     const navigation= useNavigation()
     
  
-    const getDetail = useCallback(async(id: number )=> {
-        try{
-            const response = await getServicePointDetail(id)
+    const getDetail = useCallback((id: number )=> {
+         getServicePointDetail(id).subscribe({
+            next:(response)=>{
             setDettaglio(response.data)
             setIsLoading(false)
-        } catch(error: any){
-            console.log(error)
+        },
+            error:(err)=>{
+            console.log(err)
             setIsLoading(false)
-            const status= error.response?.status
+            const status= err.response?.status
             if (status===404 || status===500){
                 setHasError(true)
                 setMessageError('Servizio momentaneamente non disponibile')
-            }
+            }}})
 
-        }
+        
     }, [])
 
 
    
 
 
-    const checkPreferito = useCallback(async (id: number) => {
-  try {
-    const response = await getFavorites()
+    const checkPreferito = useCallback((id: number) => {
+  getFavorites().subscribe({
+    next:(response)=>{
     const found = response.data.find((f: any) => f.id === id)
     if (found) {
       setIsPreferito(true)
       setFavoritoId(found.id)
     }
-  } catch (error) {
-    console.error(error)
-  }
+  },
+     error: (err)=>{
+        console.error(err)
+  }})
 }, [])
 
     const checkPosizione= useCallback(async()=> {
@@ -102,21 +106,22 @@ const ServicePointScreen = ()=>{
     }, [dettaglio])
 
 
-    const checkQRCode= async(trackingCode: string) => {
-        try{
-            const response = await postPackages( {
+    const checkQRCode= (trackingCode: string) => {
+        postPackages( {
                 tracking_code: trackingCode,
                 pickup_point_id: dettaglio!.id
-            })
+            }).subscribe({
+                next:(response)=>{
             dispatch(showSuccess(response.message || 'Pacco ritirato'))
             
 
-        }catch(error: any){
-            console.log('errore completo:', error.response?.data)
+        }, 
+        error:(err)=>{
+            console.log('errore completo:', err.response?.data)
             const message=
-            error.response?.data?.message || 'QR code non valido'
-            dispatch(showError(message))
-        }
+            err.response?.data?.message || 'QR code non valido'
+            dispatch(showError(message))}
+        })
     }
 
     const openGoogleMaps= useCallback(()=> {
@@ -138,27 +143,29 @@ const ServicePointScreen = ()=>{
 
 
 
-    const addPreferito = useCallback(async () => {
-  try {
-    await addFavorites ({
+    const addPreferito = useCallback( () => {
+  addFavorites ({
       pickup_point_id: dettaglio!.id
-    })
+    }).subscribe({
+        next :()=>{
     setIsPreferito(true)
     dispatch(showSuccess('Aggiunto ai preferiti!'))
-  } catch (error: any) {
-    dispatch(showError(error.response?.data?.message || 'Errore'))
-  }
+  },
+  error:(err: any)=> {
+    dispatch(showError(err.response?.data?.message || 'Errore'))}
+  })
 }, [dettaglio])
 
-    const removePreferito = useCallback(async () => {
-    try {
-        await deleteFavorites( + dettaglio!.id)
+    const removePreferito = useCallback(() => {
+    deleteFavorites( + dettaglio!.id).subscribe({
+        next:()=>{
         setIsPreferito(false)
         setFavoritoId(null)
         dispatch(showSuccess('Rimosso dai preferiti!'))
-    } catch (error: any) {
-        dispatch(showError(error.response?.data?.message || 'Errore'))
-    }
+    }, 
+    error: (err: any)=> {
+        dispatch(showError(err.response?.data?.message || 'Errore'))}
+    })
     }, [dettaglio])
 
 
@@ -210,11 +217,8 @@ const provincia = useMemo(() => {
 }, [dettaglio?.province, dettaglio?.postal_code])
 
     
-    if(isLoading) return <Text>Caricamento...</Text>
-    if(!dettaglio) return <Text> Errore nel caricamento</Text>
-
-
-
+  if (isLoading) return <Text>{t('common.loading')}</Text>
+if (!dettaglio) return <Text>{t('common.noData')}</Text>
 
     if (hasError) {
         return (
@@ -254,19 +258,19 @@ const provincia = useMemo(() => {
             
 
                 <InfoCard
-                    label="Indirizzo"
+                    label={t('servicePoint.address')} 
                     value= {indirizzo}
                 />
                 <InfoCard
-                    label="Provincia"
+                    label={t('servicePoint.province')}
                     value= {provincia}
                 />
                 <InfoCard
-                    label="Telefono"
+                    label={t('servicePoint.phone')}
                     value= {dettaglio.phone}
                 />
                  <InfoCard
-                    label="Orari"
+                    label={t('servicePoint.hours')}
                     value={ '🕐' + dettaglio.opening_hours}
                 />
 
@@ -275,7 +279,7 @@ const provincia = useMemo(() => {
 
             <AppButton
                 onPress={openGoogleMaps}
-               title= 'Apri in Google Maps'
+               title= {t('servicePoint.openMaps')}
                variant='primary'
            />
 
@@ -284,13 +288,13 @@ const provincia = useMemo(() => {
 
              <View>
         <Text style={[styles.statusTesto, { color: isVicino ? '#10b981' :'#ef4444' }]}>
-          {isVicino ? 'Sei vicino! Puoi ritirare il pacco' : 'Sei troppo lontano dal service point'}
+          {isVicino ? t('servicePoint.nearby') : t('servicePoint.farAway')}
         </Text>
       </View>
 
              {isVicino && (
                <AppButton
-                    title="📷 Scansiona QR Code"
+                    title={t('servicePoint.scanQR')}
                     variant="primary"
                     onPress={handleScannerOpen}
                 />
@@ -299,12 +303,12 @@ const provincia = useMemo(() => {
             {isVicino &&(
                 <View>
                 <AppInput
-                placeholder='Inserisci tracking code manualmente'
+                placeholder={t('servicePoint.manualCode')}
                 value = {trackingCodeManuale}
                 onChangeText={setTrackingCodeManuale}
                 />
                 <AppButton
-                    title="Invia codice"
+                    title={t('servicePoint.sendCode')}
                     variant="success"
                     onPress={() => {
                         if (trackingCodeManuale) {
@@ -333,7 +337,7 @@ const provincia = useMemo(() => {
                 </View >
                     <View style={styles.containerButton2}>
                         <AppButton
-                        title="❌ Chiudi Camera"
+                        title={t('servicePoint.closeCamera')}
                         variant="danger"
                         onPress={() => {
                             setShowScanner(false)
@@ -367,7 +371,7 @@ const provincia = useMemo(() => {
 
             {scanned && (
                 <AppButton
-                    title="📷 Scansiona di nuovo"
+                    title={t('servicePoint.scanAgain')}
                     variant="primary"
                     onPress={async () => {
                         if (!permission?.granted) {

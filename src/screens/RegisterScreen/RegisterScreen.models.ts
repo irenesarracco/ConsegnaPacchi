@@ -10,6 +10,7 @@ export type RegisterRequest = {
   address: string
 }
 
+
 export type RegisterResponse = {
   message: string
   user: User

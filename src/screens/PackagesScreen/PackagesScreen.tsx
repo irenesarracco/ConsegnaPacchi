@@ -1,4 +1,4 @@
-import React from 'react'
+/*import React from 'react'
 import {useState, useEffect} from 'react'
 import { Package } from './PackagesScreen.models'
 import client from '../../api/client'
@@ -55,4 +55,4 @@ const PackagesScreen = () => {
 
 
 
-export default PackagesScreen
+export default PackagesScreen*/

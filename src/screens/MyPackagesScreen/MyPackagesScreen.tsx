@@ -11,8 +11,12 @@ import AppButton from "../../components/AppButton/AppButton"
 import {MyPackagesScreenNavigationProp } from "./MyPackagesScreen.models"
 import { useNavigation } from "@react-navigation/native"
 import ErrorPage from '../../components/ErrorPage/ErrorPage'
+import { useTranslation } from "react-i18next"
+
+
 
 const MyPackagesScreen = () => {
+    const {t} = useTranslation()
     const [myPacchi, setMyPacchi] = useState<MyPackage[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const {paddingTop, paddingBottom}= useSafeArea()
@@ -24,21 +28,21 @@ const MyPackagesScreen = () => {
 
 
 
-    const getMyPackages = async()=> {
-        try{
-            const response= await getMy()
-            setIsLoading(false)
+    const getMyPackages = ()=> {
+            getMy().subscribe({
+            next:(response)=> {setIsLoading(false)
             setMyPacchi(response.data)
-        } catch(error: any){
-            dispatch(showError(error.response?.data?.message || 'Errore nel caricamento'))
+        } ,
+        error :(err )=> {
+            dispatch(showError(err.response?.data?.message || 'Errore nel caricamento'))
             setIsLoading(false)
-            const status = error.response?.status
+            const status = err.response?.status
             if (status===404 ||status===500){
                 setHasError(true)
                 setMessageError('Servizio momentaneamente non disponibile')
             }
-        }
-    }
+    }})}
+    
 
      
 
@@ -47,7 +51,7 @@ const MyPackagesScreen = () => {
     }, [])
 
 
-    if (isLoading) return <Text>Caricamento...</Text>
+if (isLoading) return <Text>{t('common.loading')}</Text>
 
    
     if (hasError){
@@ -72,8 +76,8 @@ const MyPackagesScreen = () => {
                keyExtractor= {item => item.id.toString()}
                 ListHeaderComponent={
                     <View style={styles.header}>
-                    <Text style={styles.titolo}>📦 I miei pacchi</Text>
-                    <Text style={styles.sottotitolo}>{myPacchi.length} pacchi ritirati</Text>
+                    <Text style={styles.titolo}>{t('packages.title')}</Text>
+                    <Text style={styles.sottotitolo}>{myPacchi.length} {t('packages.withdrawn')}</Text>
                     </View>
                 }
                 ItemSeparatorComponent={() => <View style={styles.divider} />}
@@ -85,14 +89,14 @@ const MyPackagesScreen = () => {
                        <Text style={styles.puntoRitiro}>📍 {item.pickup_point.name}</Text>
                         <Text style={styles.puntoRitiro}>{item.pickup_point.address}, {item.pickup_point.city}</Text>
                         <View style={styles.statusBadge}>
-                            <Text style={styles.statusText}>{item.status=== 'collected' ? 'Ritirato':'Procedura di reso attivata'}</Text>
+                            <Text style={styles.statusText}>{item.status=== 'collected' ? t('packages.collected') : t('packages.returnInitiated')}</Text>
                         </View>
 
                         {item.status === 'collected' && (
                               <AppButton
                                     onPress= {()=> navigation.navigate('Returns',  { packageId: item.id, status: item.status,trackingCode: item.tracking_code,
                                     courier: item.pickup_point.courier, collectedAt: item.collected_at } )}
-                                    title='Reso'
+                                    title={t('packages.return')}
                                     variant='secondary'
                                     
                                 />
@@ -103,7 +107,7 @@ const MyPackagesScreen = () => {
                             <AppButton
                                 onPress= {()=> navigation.navigate('Returns',  { packageId: item.id, status: item.status,trackingCode: item.tracking_code,
                                 courier: item.pickup_point.courier, collectedAt: item.collected_at } )}
-                                title= 'Visualizza dettagli reso'/>
+                                title= {t('packages.viewReturn')}/>
     )}
                    </AppCard>
                )}

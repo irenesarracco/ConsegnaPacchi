@@ -1,26 +1,31 @@
 import client from "../api/client"
 import { LoginResponse } from "../screens/LoginScreen/LoginScreen.models"
-import { RegisterRequest } from "../screens/RegisterScreen/RegisterScreen.models"
+import { RegisterRequest, RegisterResponse} from "../screens/RegisterScreen/RegisterScreen.models"
+import { from, Observable , of} from "rxjs";
+import { catchError, map } from 'rxjs/operators'
+import { postData } from "../api/client";
+
 
 const auth_url = '/api/auth'
 
 
-export const login= async( 
+export const login= ( 
     email: string,
     password: string
-) : Promise<LoginResponse> => {
-    const response = await client.post<LoginResponse>(
-    auth_url + '/login',
-    {
-      email,
-      password,
-    }
-  )
-
-  return response.data
+) : Observable<LoginResponse> => {
+    return postData<LoginResponse>(auth_url + '/login',{ email, password})
 }
 
+export const register= ( 
+     data: RegisterRequest
+) : Observable<RegisterResponse> => {
+    return postData<RegisterResponse>(
+auth_url + '/register', data
+    )
 
+}
+
+/*
 export const register = async(
     data: RegisterRequest
 ) => {
@@ -29,4 +34,4 @@ export const register = async(
         
     )
     return response.data
-}
+}*/

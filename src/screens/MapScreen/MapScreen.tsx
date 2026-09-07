@@ -11,6 +11,8 @@ import { getListaServicePoints } from '../../services/servicePoint_services'
 import { useSafeArea } from '../../utils/useSafeArea'
 import ErrorPage from '../../components/ErrorPage/ErrorPage'
 import { useTranslation } from 'react-i18next'
+import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated'
+
 
 
 const MapScreen= () => {
@@ -69,7 +71,7 @@ const markerPress = useCallback((point: ServicePoint) => {
   return (
     <View style={[styles.container, {paddingTop, paddingBottom}]}>
 
-      <View style={styles.topPanelContainer}>
+      <Animated.View entering={FadeInDown.duration(500)} style={styles.topPanelContainer}>
         <TouchableOpacity 
           onPress={() => navigation.navigate('ProfileScreen')}
           style={styles.profileButton}
@@ -88,7 +90,7 @@ const markerPress = useCallback((point: ServicePoint) => {
         {isLoading && (
           <ActivityIndicator size="small" color="#111827" style={styles.loader} />
         )}
-      </View>
+      </Animated.View>
 
 
       <MapView

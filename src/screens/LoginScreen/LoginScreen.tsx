@@ -13,6 +13,7 @@ import AppInput from '../../components/AppInput/AppInput'
 import AppButton from '../../components/AppButton/AppButton'
 import { useSafeArea } from '../../utils/useSafeArea'
 import { useTranslation } from 'react-i18next'
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
 
 
 type LoginNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>
@@ -57,29 +58,39 @@ const LoginScreen = () => {
   return (
     <View style={[styles.container, {paddingTop, paddingBottom}]}>
 
-      <Text style={styles.header}>{t('login.title')}</Text>
-      <Text style={styles.subtitle}>{t('login.subtitle')}</Text>
+      <Animated.Text entering={FadeInDown.delay(400).duration(500)}style={styles.header}>{t('login.title')}</Animated.Text>
+      <Animated.Text entering={FadeInDown.delay(600).duration(500)}style={styles.subtitle}>{t('login.subtitle')}</Animated.Text>
 
+       <Animated.View entering={FadeInDown.delay(800).duration(500)} style={{ width: '100%' }}>
       <AppInput
         placeholder={t('login.email')}
         value={email}
         onChangeText={setEmail}
       />
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.delay(1000).duration(500)} style={{ width: '100%' }}>
       <AppInput
         placeholder={t('login.password')}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
+      </Animated.View>
 
+      <Animated.View entering={FadeInDown.delay(1200).duration(500)} style={{ width: '100%' }}>
       <AppButton
         title={loading ? t('login.loading') : t('login.button')}
         onPress={handleLogin}
       />
+      </Animated.View>
 
+      <Animated.View entering={FadeInUp.delay(1400).duration(500)} style={{ width: '100%' }}>
       <TouchableOpacity onPress={() => navigation.navigate('Register')}>
         <Text>{t('login.register')}</Text>
       </TouchableOpacity>
+      </Animated.View>
+      
 
     </View>
   )

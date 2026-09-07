@@ -7,6 +7,7 @@ import {useState, useEffect} from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import * as Notifications from 'expo-notifications'
 import './src/i18n/index'
+import {GestureHandlerRootView} from 'react-native-gesture-handler'
 
 import LoginScreen from './src/screens/LoginScreen/LoginScreen'
 import MapScreen from './src/screens/MapScreen/MapScreen'
@@ -103,8 +104,7 @@ const RootNavigator = () => {
     />
   }
 
- // return isLoggedIn ? <AppNavigator /> : <AuthNavigator 
- return <AppNavigator/>
+  return isLoggedIn ? <AppNavigator /> : <AuthNavigator/> 
 }
 
 
@@ -204,6 +204,7 @@ useEffect(() => {
 
 
   return (
+    <GestureHandlerRootView style={{flex:1}}>
     <Provider store={store}>
       <SafeAreaProvider>
         <NavigationContainer ref={navigationRef}>
@@ -217,6 +218,7 @@ useEffect(() => {
         </NavigationContainer>
       </SafeAreaProvider>
     </Provider>
+    </GestureHandlerRootView>
   )
 }
 

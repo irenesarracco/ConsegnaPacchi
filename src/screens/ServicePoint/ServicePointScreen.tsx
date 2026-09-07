@@ -23,6 +23,7 @@ import { useNavigation } from '@react-navigation/native'
 import { check, request, openSettings, PERMISSIONS, RESULTS } from 'react-native-permissions'
 import { Platform } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import Animated, {FadeIn, FadeInUp, useSharedValue, useAnimatedStyle, withTiming, interpolate, interpolateColor} from 'react-native-reanimated'
 
 
 const ServicePointScreen = ()=>{
@@ -216,7 +217,19 @@ const provincia = useMemo(() => {
   return dettaglio?.province + ' - ' + dettaglio?.postal_code
 }, [dettaglio?.province, dettaglio?.postal_code])
 
+
+const vicinanza= useSharedValue(0)
+
+useEffect(()=> {
+    vicinanza.value= withTiming(isVicino? 1:0, {duration:500})
+}, [isVicino])
     
+
+const statusStyle= useAnimatedStyle(()=> ({
+    color: interpolateColor(vicinanza.value, [0,1], ['#ef4444', '#10b981'])
+}))
+
+
   if (isLoading) return <Text>{t('common.loading')}</Text>
 if (!dettaglio) return <Text>{t('common.noData')}</Text>
 
@@ -287,21 +300,23 @@ if (!dettaglio) return <Text>{t('common.noData')}</Text>
 
 
              <View>
-        <Text style={[styles.statusTesto, { color: isVicino ? '#10b981' :'#ef4444' }]}>
+        <Animated.Text style={[styles.statusTesto, statusStyle]}>
           {isVicino ? t('servicePoint.nearby') : t('servicePoint.farAway')}
-        </Text>
+        </Animated.Text>
       </View>
 
              {isVicino && (
+                <Animated.View entering={FadeInUp.duration(400)}>
                <AppButton
                     title={t('servicePoint.scanQR')}
                     variant="primary"
                     onPress={handleScannerOpen}
                 />
+                </Animated.View>
             )}
 
             {isVicino &&(
-                <View>
+                <Animated.View entering={FadeInUp.delay(200).duration(400)}>
                 <AppInput
                 placeholder={t('servicePoint.manualCode')}
                 value = {trackingCodeManuale}
@@ -317,7 +332,7 @@ if (!dettaglio) return <Text>{t('common.noData')}</Text>
                         }
                     }}
                 />
-                </View>
+                </Animated.View>
             )}
 
     </ScrollView>

@@ -16,10 +16,11 @@ import { useSafeArea } from "../../utils/useSafeArea"
 import ErrorPage from '../../components/ErrorPage/ErrorPage'
 import { useTranslation } from "react-i18next"
 import i18n from "../../i18n/index"
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
 
 const ProfileScreen = ()=>{
     const { t} = useTranslation()
-    //const [profile, setProfile]= useState<UserProfile | null> (null)
+    const [profile, setProfile]= useState<UserProfile | null> (null)
     const [isLoading, setIsLoading]= useState(true)
     const dispatch= useDispatch()
     const [isEditing, setIsEditing]= useState(false)
@@ -30,15 +31,7 @@ const ProfileScreen = ()=>{
     const [messageError, setMessageError]= useState('')
 
 
-    const [profile, setProfile] = useState<UserProfile | null>({
-  id: 1,
-  name: 'Federica',
-  surname: 'Test',
-  email: 'test@test.com',
-  phone: '333333333',
-  address: 'Via Test 1'
-})
-
+    
     const cambiaLingua = () => {
         const nuovaLingua = i18n.language === 'it' ? 'en' : 'it'
         i18n.changeLanguage(nuovaLingua)
@@ -97,6 +90,19 @@ const ProfileScreen = ()=>{
   }, [dispatch])
 
 
+  const translateX = useSharedValue(0)
+
+const formStyle = useAnimatedStyle(() => ({
+  transform: [{ translateX: withTiming(isEditing ? 0 : 300, { duration: 300 }) }],
+  opacity: withTiming(isEditing ? 1 : 0, { duration: 300 })
+}))
+
+const infoStyle = useAnimatedStyle(() => ({
+  transform: [{ translateX: withTiming(isEditing ? -300 : 0, { duration: 300 }) }],
+  opacity: withTiming(isEditing ? 0 : 1, { duration: 300 })
+}))
+
+
 
 if (isLoading) return <Text>{t('common.loading')}</Text>
 
@@ -144,7 +150,8 @@ if (isLoading) return <Text>{t('common.loading')}</Text>
 
 
                 {isEditing ? (
-                    <View>
+                    <Animated.View style={formStyle}
+                        >
                         <AppInput
                             placeholder={t('profile.name')}
                             value={formData.name || ''}
@@ -189,10 +196,11 @@ if (isLoading) return <Text>{t('common.loading')}</Text>
                             variant="secondary"
                         />
 
-                    </View>
+                    </Animated.View>
 
                 ) : (
-                    <View>
+                    <Animated.View style={infoStyle}
+                        >
                         <InfoCard
                         label={t('profile.email')}
                         value={profile.email}/>
@@ -230,7 +238,7 @@ if (isLoading) return <Text>{t('common.loading')}</Text>
                     variant="primary"
 
                 />
-                    </View>
+                    </Animated.View>
                 )}
             </ScrollView>
         </View>

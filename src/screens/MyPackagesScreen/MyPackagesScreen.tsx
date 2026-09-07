@@ -12,6 +12,7 @@ import {MyPackagesScreenNavigationProp } from "./MyPackagesScreen.models"
 import { useNavigation } from "@react-navigation/native"
 import ErrorPage from '../../components/ErrorPage/ErrorPage'
 import { useTranslation } from "react-i18next"
+import Animated, {FadeInUp, ZoomIn, ZoomInEasyDown} from "react-native-reanimated"
 
 
 
@@ -82,14 +83,15 @@ if (isLoading) return <Text>{t('common.loading')}</Text>
                 }
                 ItemSeparatorComponent={() => <View style={styles.divider} />}
                renderItem= {({item}) => (
+                <Animated.View entering={FadeInUp.delay(200).duration(400)}>
                    <AppCard>
 
-                       <Text style={styles.trackingCode}>{item.tracking_code}</Text>
-                       <Text style={styles.destinatario}>{item.recipient_name} {item.recipient_surname}</Text>
-                       <Text style={styles.puntoRitiro}>📍 {item.pickup_point.name}</Text>
-                        <Text style={styles.puntoRitiro}>{item.pickup_point.address}, {item.pickup_point.city}</Text>
+                       <Animated.Text entering={ZoomIn.delay(400)} style={styles.trackingCode}>{item.tracking_code}</Animated.Text>
+                       <Animated.Text entering={ZoomIn.delay(500)} style={styles.destinatario}>{item.recipient_name} {item.recipient_surname}</Animated.Text>
+                       <Animated.Text entering={ZoomIn.delay(600)}  style={styles.puntoRitiro}>📍 {item.pickup_point.name}</Animated.Text>
+                        <Animated.Text entering={ZoomIn.delay(700)}  style={styles.puntoRitiro}>{item.pickup_point.address}, {item.pickup_point.city}</Animated.Text>
                         <View style={styles.statusBadge}>
-                            <Text style={styles.statusText}>{item.status=== 'collected' ? t('packages.collected') : t('packages.returnInitiated')}</Text>
+                            <Animated.Text entering={ZoomIn.delay(800)} style={styles.statusText}>{item.status=== 'collected' ? t('packages.collected') : t('packages.returnInitiated')}</Animated.Text>
                         </View>
 
                         {item.status === 'collected' && (
@@ -110,6 +112,8 @@ if (isLoading) return <Text>{t('common.loading')}</Text>
                                 title= {t('packages.viewReturn')}/>
     )}
                    </AppCard>
+
+                </Animated.View>
                )}
                />
                
